@@ -199,7 +199,7 @@ if (newcomp.length === 0) {
   console.log("\nNo new data");
 } else {
   console.log("New entries:", newcomp);
-  fs.writeFile('COAL_attendance.json',JSON.stringify(newAttendance),(err)=>{
+  fs.writeFile(listofrecords[count],JSON.stringify(newAttendance),(err)=>{
     if(err){
       console.log(err);
     }
