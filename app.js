@@ -51,30 +51,20 @@ dotenv.config();
     }
   });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  function toUnderscore(str) {
+    return str.trim().replace(/\s+/g, '_');
+  }
 
   let count=0;
-  let listofrecords = ["COAL_attendance.json","Expo_attendance.json","Web_attendance.json","Auto_attendance.json","ADBMS_attendance.json","AP_attendance.json"];
-  
+
+  //let listofrecords = ["COAL_attendance.json","Expo_attendance.json","Web_attendance.json","Auto_attendance.json","ADBMS_attendance.json","AP_attendance.json"];
+  let listofrecords = [];
   for(const link of courseLinks){
     await page.goto(link.href.replace('info','attendance'),{waitUntil:'domcontentloaded'});
+
+    let courseText = await page.$eval('li.md-color-blue-grey-900 > span',el=>el.textContent.trim());
+    let courseText2 = toUnderscore(courseText);
+    listofrecords.push(courseText2);
 
     if(!fs.existsSync(listofrecords[count])){
   const attendaced = await page.evaluate(()=>{
@@ -110,23 +100,9 @@ dotenv.config();
 
   count++;
   }
+  console.log(listofrecords);
   
   count=0;
-
-
-
-  
-
-
-
-
-
-
-
-
-
-
-
 
 for(const link2 of courseLinks){
 let coal_oa = [];
@@ -212,9 +188,8 @@ if (newcomp.length === 0) {
 
 count++;
 };
-  
 
 
-  
+await browser.close();
 
 })();

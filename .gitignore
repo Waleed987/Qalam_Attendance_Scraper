@@ -2,10 +2,10 @@ node_modules/
 
 .env
 
-COAL_attendance.json
+Advanced_Database_Management_Systems
+Applied_Physics
+Computer_Organization_and_Assembly_Language
+Expository_Writing
+Theo_Of_Automata_&_Formal_Lang
+Web_Technologies
 course_data.json
-Expo_attendance.json
-Web_attendance.json
-AP_attendance.json
-ADBMS_attendance.json
-Auto_attendance.json
