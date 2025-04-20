@@ -2,6 +2,7 @@ node_modules/
 
 .env
 
+<<<<<<< HEAD
 COAL_attendance.json
 course_data.json
 Advanced_Database_Management_Systems
@@ -10,3 +11,12 @@ Expository_Writing
 Theo_Of_Automata_&_Formal_Lang
 Web_Technologies
 Computer_Organization_and_Assembly_Language
+=======
+Advanced_Database_Management_Systems
+Applied_Physics
+Computer_Organization_and_Assembly_Language
+Expository_Writing
+Theo_Of_Automata_&_Formal_Lang
+Web_Technologies
+course_data.json
+>>>>>>> feature-allcourseinfoget

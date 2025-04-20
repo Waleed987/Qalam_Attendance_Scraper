@@ -51,50 +51,88 @@ dotenv.config();
     }
   });
 
+  function toUnderscore(str) {
+    return str.trim().replace(/\s+/g, '_');
+  }
 
-  await page.goto('https://qalam.nust.edu.pk/student/course/attendance/1901777',{waitUntil:'domcontentloaded'});
+  let count=0;
 
+  //let listofrecords = ["COAL_attendance.json","Expo_attendance.json","Web_attendance.json","Auto_attendance.json","ADBMS_attendance.json","AP_attendance.json"];
+  let listofrecords = [];
+  for(const link of courseLinks){
+    await page.goto(link.href.replace('info','attendance'),{waitUntil:'domcontentloaded'});
 
-  if(!fs.existsSync('COAL_attendance.json')){
+    let courseText = await page.$eval('li.md-color-blue-grey-900 > span',el=>el.textContent.trim());
+    let courseText2 = toUnderscore(courseText);
+    listofrecords.push(courseText2);
+
+    if(!fs.existsSync(listofrecords[count])){
   const attendaced = await page.evaluate(()=>{
-
-
-
-    const rows = Array.from(document.querySelectorAll('table tbody tr'));
-
-    return rows.map((row)=>{
-      const columns = row.querySelectorAll('td');
-      return {
-        sr_no: columns[0]?.innerText.trim(),
-        date: columns[1]?.innerText.trim(),
-        status: columns[2]?.innerText.trim()
-      };
+  
+   const rows = Array.from(document.querySelectorAll('table tbody tr'));
+  
+   return rows.map((row)=>{
+     const columns = row.querySelectorAll('td');
+     return {
+       sr_no: columns[0]?.innerText.trim(),
+       date: columns[1]?.innerText.trim(),
+       status: columns[2]?.innerText.trim()
+     };
+   });
+  });
+  
+  console.log(attendaced);
+  
+    fs.writeFile(listofrecords[count],JSON.stringify(attendaced),(err)=>{
+      if(err){
+        console.log(err);
+      }
+      else{
+        console.log(`${listofrecords[count]} Attendance Scrapped Successfully`);
+        
+      }
     });
-  });
+  }
+  else{
+    console.log(`${listofrecords[count]} FILE ALREADY EXISTS`);
+  }
 
- console.log(attendaced);
 
-  fs.writeFile('COAL_attendance.json',JSON.stringify(attendaced),(err)=>{
-    if(err){
-      console.log(err);
-    }
-    else{
-      console.log("Attendance Scrapped Successfully");
-      
-    }
-  });
-}
-else{
-  console.log("COAL ATTENDANCE FILE ALREADY EXISTS");
+  count++;
+  }
+  console.log(listofrecords);
   
-}
-  
+  count=0;
+
+for(const link2 of courseLinks){
 let coal_oa = [];
+let ap_oa = [];
+let auto_oa = [];
+let adbms_oa = [];
+let expo_oa = [];
+let web_oa = [];
 
 try {
-  const rawdata = fs.readFileSync('COAL_attendance.json', 'utf-8');
+  const rawdata = fs.readFileSync(listofrecords[count], 'utf-8');
   if (rawdata.trim().length > 0) {
-    coal_oa = JSON.parse(rawdata);
+    if(count === 0){
+      coal_oa = JSON.parse(rawdata);
+    }
+    else if(count === 1){
+      expo_oa = JSON.parse(rawdata);
+    }
+    else if(count === 2){
+      web_oa = JSON.parse(rawdata);
+    }
+    else if(count === 3){
+      auto_oa = JSON.parse(rawdata);
+    }
+    else if(count === 4){
+      adbms_oa = JSON.parse(rawdata);
+    }
+    else if(count === 5){
+      ap_oa = JSON.parse(rawdata);
+    }
   } else {
     console.log("File is empty, treating as no previous attendance data.");
   }
@@ -102,7 +140,7 @@ try {
   console.error("Error reading or parsing COAL_attendance.json:", err.message);
 }
 
-  await page.goto('https://qalam.nust.edu.pk/student/course/attendance/1901777',{waitUntil:'domcontentloaded'});
+  await page.goto(link2.href.replace('info','attendance'),{waitUntil:'domcontentloaded'});
 
 
   const newAttendance = await page.evaluate(()=>{
@@ -120,13 +158,16 @@ try {
 
  // Filter new entries not in old attendance
 const newcomp = newAttendance.filter(newItem => {
-  return !coal_oa.some(oldItem =>
+  const old_array = [coal_oa,expo_oa,web_oa,auto_oa,adbms_oa,ap_oa];
+  const targetarray = old_array[count];
+  return !targetarray.some(oldItem =>
     oldItem.sr_no === newItem.sr_no &&
     oldItem.date === newItem.date &&
     oldItem.status === newItem.status
   );
 });
 
+console.log(`${listofrecords[count]}`);
 
 console.log(newAttendance);
 
@@ -134,7 +175,7 @@ if (newcomp.length === 0) {
   console.log("\nNo new data");
 } else {
   console.log("New entries:", newcomp);
-  fs.writeFile('COAL_attendance.json',JSON.stringify(newAttendance),(err)=>{
+  fs.writeFile(listofrecords[count],JSON.stringify(newAttendance),(err)=>{
     if(err){
       console.log(err);
     }
@@ -144,9 +185,11 @@ if (newcomp.length === 0) {
     }
   });
 }
-  
+
+count++;
+};
 
 
-  
+await browser.close();
 
 })();
