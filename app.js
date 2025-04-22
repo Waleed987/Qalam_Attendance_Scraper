@@ -3,12 +3,16 @@ import fs from 'fs';
 import dotenv from 'dotenv';
 import { log } from 'console';
 
+import * as xlsx from 'xlsx';
+
 dotenv.config();
 
 
+
 (async () => {
-  const browser = await puppeteer.launch({ headless: false });
+  const browser = await puppeteer.launch({ headless: true });
   const page = await browser.newPage();
+
 
   await page.goto('https://qalam.nust.edu.pk/web/login', { waitUntil: 'domcontentloaded' });
 
@@ -81,6 +85,7 @@ dotenv.config();
    });
   });
   
+ 
   console.log(attendaced);
   
     fs.writeFile(listofrecords[count],JSON.stringify(attendaced),(err)=>{
@@ -170,6 +175,15 @@ const newcomp = newAttendance.filter(newItem => {
 console.log(`${listofrecords[count]}`);
 
 console.log(newAttendance);
+
+  // Create workbook and sheet
+  const ws = xlsx.utils.json_to_sheet(newAttendance);
+  const wb = xlsx.utils.book_new();
+  xlsx.utils.book_append_sheet(wb, ws, "Attendance");
+
+// Write file to desktop
+  xlsx.writeFile(wb, `${listofrecords[count]}.xlsx`);
+
 
 if (newcomp.length === 0) {
   console.log("\nNo new data");
