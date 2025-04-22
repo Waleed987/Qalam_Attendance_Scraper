@@ -10,7 +10,7 @@ dotenv.config();
 
 
 (async () => {
-  const browser = await puppeteer.launch({ headless: true });
+  const browser = await puppeteer.launch({ headless: false });
   const page = await browser.newPage();
 
 
@@ -64,7 +64,7 @@ dotenv.config();
   //let listofrecords = ["COAL_attendance.json","Expo_attendance.json","Web_attendance.json","Auto_attendance.json","ADBMS_attendance.json","AP_attendance.json"];
   let listofrecords = [];
   for(const link of courseLinks){
-    await page.goto(link.href.replace('info','attendance'),{waitUntil:'domcontentloaded'});
+    await page.goto(link.href.replace('info','attendance'),{waitUntil:'domcontentloaded', waitUntil: 'networkidle0', timeout: 60000});
 
     let courseText = await page.$eval('li.md-color-blue-grey-900 > span',el=>el.textContent.trim());
     let courseText2 = toUnderscore(courseText);
@@ -145,7 +145,7 @@ try {
   console.error("Error reading or parsing COAL_attendance.json:", err.message);
 }
 
-  await page.goto(link2.href.replace('info','attendance'),{waitUntil:'domcontentloaded'});
+  await page.goto(link2.href.replace('info','attendance'),{waitUntil:'domcontentloaded', waitUntil: 'networkidle0', timeout: 60000});
 
 
   const newAttendance = await page.evaluate(()=>{
